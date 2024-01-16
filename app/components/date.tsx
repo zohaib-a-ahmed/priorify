@@ -1,8 +1,9 @@
-import { Card, Text, Group, Modal, Button, Paper, Center, Checkbox } from "@mantine/core";
+import { Card, Text, Modal, Button, Paper, Center, Checkbox } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { Event, Reminder } from "../supabase/types";
 import { supabase } from "../supabase/client";
+import { deleteEvent } from "./util";
 
 type CalendarDateProps = {
     date: string;
@@ -45,10 +46,7 @@ const CalendarDate: React.FC<CalendarDateProps & { onUpdate: () => void }> = ({ 
             try {
                 // Convert each ID to a string and map to an array of fetch promises
                 const deletionPromises = identifiers.map(id =>
-                    fetch(`http://127.0.0.1:5000/calendar/${id.toString()}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${accessToken}` }
-                    })
+                    deleteEvent(id, accessToken)
                 );
     
                 const responses = await Promise.all(deletionPromises);

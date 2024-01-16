@@ -1,10 +1,12 @@
-import { SimpleGrid, Text, Center, Button, Group } from '@mantine/core';
+import { SimpleGrid, Text, Center, Button, Group, Modal, Divider } from '@mantine/core';
+import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase/client';
 import { Event, Reminder } from '../supabase/types';
 import { fetchEvents, fetchReminders } from './util';
 import { useRouter } from 'next/navigation';
 import CalendarDate from './date';
+import NewEvent from './createEvent';
 
 export default function MyComponent() {
 
@@ -12,6 +14,7 @@ export default function MyComponent() {
     const [events, setEvents] = useState<Event[]>([])
     const [reminders, setReminders] = useState<Reminder[]>([])
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [opened, { open, close }] = useDisclosure(false);
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const router = useRouter();
 
@@ -126,15 +129,15 @@ export default function MyComponent() {
         <>
             <Center style={{ marginBottom: 20, width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                 <Group>
-                    <Button size='lg' variant="transparent" color="orange" onClick={goToPreviousMonth}>{"<"}</Button>
+                    <Button size='lg' variant="subtle" color="orange" onClick={goToPreviousMonth}>{"<"}</Button>
                     <div className="w-[200px]"> {/* Adjust the width as needed */}
                         <Text size="xl" fw={650} className="text-center">
                             {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
                         </Text>
                     </div>
-                    <Button size='lg' variant="transparent" color="orange" onClick={goToNextMonth}>{">"}</Button>
+                    <Button size='lg' variant="subtle" color="orange" onClick={goToNextMonth}>{">"}</Button>
                 </Group>
-                <Button size='lg' variant="transparent" color="orange">{"+"}</Button>
+                <Button size='md' variant="subtle" color="orange" onClick={open} leftSection={<Text>{'+'}</Text>}>{"Add Event"}</Button>
             </Center>
             <SimpleGrid cols={7} verticalSpacing='xl' style={{ marginBottom: 10 }}>
                 {days.map((day, index) => (
@@ -145,7 +148,10 @@ export default function MyComponent() {
             </SimpleGrid>
             <SimpleGrid cols={7} verticalSpacing="xl">
                 {(events && events.length > 0) ? renderCalendar() : null}
-            </SimpleGrid>          
+            </SimpleGrid>
+            <Modal opened={opened} onClose={close} title="Create Event">
+                <NewEvent></NewEvent>
+            </Modal>          
         </>
     );
     
