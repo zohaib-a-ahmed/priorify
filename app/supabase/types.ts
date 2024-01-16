@@ -1,6 +1,6 @@
 export type Event = {
   title: string;
-  id: number;
+  id: string;
   user_id: number;
   event_date_start: string;
   event_date_end: string;
