@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Input, Switch, Textarea, Button, Text } from '@mantine/core';
+import { Input, Switch, Textarea, Button, Text, LoadingOverlay } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { TimeInput, DatePickerInput } from '@mantine/dates';
 import { supabase } from '../supabase/client';
 import { createEvent } from './util';
 
-const NewEvent = () => {
+interface NewEventProps {
+    onUpdate: () => void,
+    onClose: () => void
+}
+
+const NewEvent: React.FC<NewEventProps> = ({ onUpdate, onClose }) => {
 
     const [accessToken, setAccessToken] = useState("")
     const [isRange, setIsRange] = useState(false);
@@ -13,6 +19,8 @@ const NewEvent = () => {
     const [eventTime, setEventTime] = useState("");
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [visible, { toggle }] = useDisclosure(false);
+
 
     useEffect(() => {
         supabase.auth.getSession().then((response: any) => {
@@ -24,6 +32,7 @@ const NewEvent = () => {
       }, []);
 
     async function createNewEvent(){
+        toggle()
         const event = {
             title : title,
             event_date_start : isRange ? dateRange[0]?.toISOString() : date?.toISOString(),
@@ -33,12 +42,14 @@ const NewEvent = () => {
         }
         console.log(event)
         await createEvent(accessToken, event).then((response : any) => {
-            console.log(response)
+            onUpdate()
+            onClose()
         })
     }
  
     return (
         <form action="Create New Event">
+            <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} loaderProps={{color : 'orange', type : 'bars'}}/>
             <Input.Wrapper label="Event Title" withAsterisk description="" error="" style={{marginBottom : 10}}>
                 <Input variant='filled' placeholder="My New Event" radius='md'value={title} onChange={(event) => setTitle(event.currentTarget.value)}/>
             </Input.Wrapper>

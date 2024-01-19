@@ -1,5 +1,5 @@
-import { Card, Text, Modal, Button, Paper, Center, Checkbox } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Card, Text, Modal, Button, Paper, Center, Checkbox, LoadingOverlay } from "@mantine/core";
+import { useToggle, useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { Event, Reminder } from "../supabase/types";
 import { supabase } from "../supabase/client";
@@ -10,12 +10,14 @@ type CalendarDateProps = {
     month : string;
     events: Event[];
     reminders : Reminder[];
+    onUpdate : () => void;
 };
 
-const CalendarDate: React.FC<CalendarDateProps & { onUpdate: () => void }> = ({ date, month, events, reminders, onUpdate }) => {
+const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, reminders, onUpdate }) => {
 
     const isInactive = date === "";
     const [opened, { open, close }] = useDisclosure(false);
+    const [visible, toggle] = useToggle([false, true]);
     const [isEdit, setIsEdit] = useState(false)
     const [toDelete, setToDelete] = useState<number[]>([])
     const [accessToken, setAccessToken] = useState<string>("")
@@ -42,8 +44,10 @@ const CalendarDate: React.FC<CalendarDateProps & { onUpdate: () => void }> = ({ 
     };
 
     async function submitDeletions(identifiers: number[]) {
-        if (accessToken && accessToken.length > 0) {
+        toggle()
+        if (accessToken && accessToken.length > 0 && identifiers.length > 0) {
             try {
+                console.log('trying to toggle 1')
                 // Convert each ID to a string and map to an array of fetch promises
                 const deletionPromises = identifiers.map(id =>
                     deleteEvent(id, accessToken)
@@ -59,14 +63,15 @@ const CalendarDate: React.FC<CalendarDateProps & { onUpdate: () => void }> = ({ 
                     }
                 });
     
-                setIsEdit(false);
                 setToDelete([]);
                 close()
-                onUpdate();
             } catch (error) {
-                console.error('Error deleting data:', error);
+                console.error('Errors deleting data:', error);
             }
+            onUpdate()
         }
+        setIsEdit(false);
+        toggle()
     }
 
     const eventDetails = events.sort((a, b) => {
@@ -91,7 +96,7 @@ const CalendarDate: React.FC<CalendarDateProps & { onUpdate: () => void }> = ({ 
                             color="red"
                             radius="md"
                             size="sm"
-                            onChange={(checkEvent) => changeDeletions(event.id, checkEvent.currentTarget.checked)}
+                            onChange={(checkEvent) => changeDeletions(+event.id, checkEvent.currentTarget.checked)}
                             />                 
                         </div>
                         }
@@ -136,6 +141,7 @@ const CalendarDate: React.FC<CalendarDateProps & { onUpdate: () => void }> = ({ 
                 </Card.Section>
             )}
             <Modal opened={opened} onClose={close} title={currDay} centered radius="lg">
+                <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} loaderProps={{color : 'orange', type : 'bars'}}/>
                 <div className="flex flex-col h-full justify-between">
                     <div>
                         {eventDetails.length > 0 ? eventDetails : <Text size="sm" className="text-gray-500">No events</Text>}

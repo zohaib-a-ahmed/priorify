@@ -1,19 +1,29 @@
-import { Accordion, Text, Group, Button, Divider, Center } from "@mantine/core"
+import { Accordion, Text, Group, Button, Divider, Center, Modal } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase/client";
 import { Reminder } from "../supabase/types";
 import { useRouter } from "next/navigation";
-import { fetchReminders } from "./util";
+import { fetchReminders, deleteReminder } from "./util";
+import NewReminder from './createReminder'
 
-export default function MyComponent() {
+type TodoProps = {
+    onUpdate : () => void;
+    key : number;
+}
 
+const ToDo: React.FC<TodoProps> = ({ onUpdate }, key) => {
+
+    const [opened, { open, close }] = useDisclosure(false);
     const [reminders, setReminders] = useState<Reminder[]>([])
+    const [accessToken, setAccessToken] = useState("")
     const router = useRouter();
 
     useEffect(() => {
         supabase.auth.getSession().then((response: any) => {
           const token = response.data.session?.access_token;
           if (token) {
+            setAccessToken(token)
             fetchReminders(token).then((response : any) => {
                 if (response == 401)
                   // Unauthorized, redirect
@@ -22,7 +32,14 @@ export default function MyComponent() {
               })
           }
         });
-    }, []);
+    }, [key]);
+
+    async function deleteAssignment(id : number) {
+        await deleteReminder(id, accessToken).then((response) => {
+            if (response.status == 401) router.push('/')
+            else onUpdate()
+        })
+    }
 
     function getItems() {
         if (reminders && reminders.length > 0)
@@ -38,7 +55,8 @@ export default function MyComponent() {
                             <Button variant="outline"
                                     color="red"
                                     radius="md"
-                                    size="xs">Delete</Button>
+                                    size="xs"
+                                    onClick={(event) => {deleteAssignment(+reminder.id)}}>Delete</Button>
                         </div>                    
                 </Accordion.Panel>
             </Accordion.Item>
@@ -47,14 +65,20 @@ export default function MyComponent() {
 
     return (
         <div className="w-full"> {/* Full width container */}
-            <Center style={{marginBottom : 20 }}>
-                <Text size="xl" fw={650} style={{ margin: '0 20px' }}>To Do</Text>                        
+            <Center style={{ marginBottom: 20, width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                <Text size="xl" fw={650} >To Do</Text>
+                <Button size='sm' variant="subtle" color="orange" onClick={open} leftSection={<Text>{'+'}</Text>}>{"Assignment"}</Button>
             </Center>
             <Divider style={{marginBottom : 30}}>
             </Divider>
             <Accordion variant="separated" radius="lg" className="w-full">
                 {(reminders && reminders.length > 0) ? getItems() : null}
-            </Accordion>                        
+            </Accordion>
+            <Modal opened={opened} onClose={close} title="Create Assignment" radius='lg'>
+                <NewReminder onClose={close} onUpdate={onUpdate}></NewReminder>
+            </Modal>                        
         </div>
     );
 };
+
+export default ToDo;

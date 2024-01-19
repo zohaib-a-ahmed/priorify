@@ -8,7 +8,11 @@ import { useRouter } from 'next/navigation';
 import CalendarDate from './date';
 import NewEvent from './createEvent';
 
-export default function MyComponent() {
+type CalendarProps = {
+  key : number;
+}
+
+const CalendarComponent: React.FC<CalendarProps> = ( key ) => {
 
     const [accessToken, setAccessToken] = useState<string>("")
     const [events, setEvents] = useState<Event[]>([])
@@ -41,7 +45,7 @@ export default function MyComponent() {
             setAccessToken(token);
           }
         });
-      }, []);
+      }, [key]);
 
     const formatDate = (year : number, month : number, day : number) => {
         return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -137,7 +141,7 @@ export default function MyComponent() {
                     </div>
                     <Button size='lg' variant="subtle" color="orange" onClick={goToNextMonth}>{">"}</Button>
                 </Group>
-                <Button size='md' variant="subtle" color="orange" onClick={open} leftSection={<Text>{'+'}</Text>}>{"Add Event"}</Button>
+                <Button size='md' variant="subtle" color="orange" onClick={open} leftSection={<Text>{'+'}</Text>}>{"Event"}</Button>
             </Center>
             <SimpleGrid cols={7} verticalSpacing='xl' style={{ marginBottom: 10 }}>
                 {days.map((day, index) => (
@@ -149,10 +153,12 @@ export default function MyComponent() {
             <SimpleGrid cols={7} verticalSpacing="xl">
                 {(events && events.length > 0) ? renderCalendar() : null}
             </SimpleGrid>
-            <Modal opened={opened} onClose={close} title="Create Event">
-                <NewEvent></NewEvent>
+            <Modal opened={opened} onClose={close} title="Create Event" radius='lg'>
+                <NewEvent onUpdate={handleUpdate} onClose={close}></NewEvent>
             </Modal>          
         </>
     );
     
 }
+
+export default CalendarComponent;
