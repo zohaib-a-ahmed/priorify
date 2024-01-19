@@ -1,13 +1,15 @@
 'use client'
 import { supabase } from '../supabase/client';
 import CalendarComponent from '../components/calendar';
-import ToDo from '../components/todo';
+import ToDo from '../components/todo'
 import { useRouter } from 'next/navigation';
 import { Button, Container, Grid, TextInput, Title, Center, Divider } from '@mantine/core';
+import { useState } from 'react';
 
 export default function Home() {
 
   const router = useRouter();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Function to handle sign-out
   const signOut = async () => {
@@ -18,6 +20,11 @@ export default function Home() {
     else router.push('/');
   };
 
+  const refresh = () => {
+    setRefreshKey(prevKey => prevKey + 1);
+  };
+
+
   return (
     <div>
       <Container fluid >
@@ -27,7 +34,8 @@ export default function Home() {
           </Grid.Col>
           <Grid.Col span={6}>
             <TextInput
-              placeholder="Graduation on May 18 at 2 PM"
+              variant='filled'
+              placeholder="What would you like me to assist?"
               description='Google Gemini Assistant'
               size="md"
               radius="md"
@@ -48,11 +56,11 @@ export default function Home() {
         <Divider></Divider>
         <Grid justify='center' align='flex-start' gutter={0}>
           <Grid.Col span={{ base: 12, md: 7, lg: 7, xl: 8 }} style={{ margin: 20 }}>
-            <CalendarComponent />
+            <CalendarComponent key={refreshKey}/>
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 4, lg: 4, xl : 3}} style={{ margin: 20}}>
             <Center>
-              <ToDo/>
+              <ToDo onUpdate={refresh} key={refreshKey}/>
             </Center>
           </Grid.Col>
         </Grid>
