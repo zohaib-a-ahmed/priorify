@@ -35,6 +35,7 @@ const ToDo: React.FC<TodoProps> = ({ onUpdate }, key) => {
     }, [key]);
 
     async function deleteAssignment(id : number) {
+        console.log('deleting this assignment: ', id)
         await deleteReminder(id, accessToken).then((response) => {
             if (response.status == 401) router.push('/')
             else onUpdate()
