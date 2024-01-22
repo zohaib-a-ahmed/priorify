@@ -47,7 +47,6 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
         toggle()
         if (accessToken && accessToken.length > 0 && identifiers.length > 0) {
             try {
-                console.log('trying to toggle 1')
                 // Convert each ID to a string and map to an array of fetch promises
                 const deletionPromises = identifiers.map(id =>
                     deleteEvent(id, accessToken)
@@ -56,9 +55,7 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
                 const responses = await Promise.all(deletionPromises);
     
                 responses.forEach(response => {
-                    if (response.status === 200) {
-                        console.log('Event deleted successfully');
-                    } else {
+                    if (response.status != 200) {
                         console.error('Failed to delete event with status:', response.status);
                     }
                 });

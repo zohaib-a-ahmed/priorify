@@ -34,7 +34,6 @@ const NewReminder: React.FC<NewReminderProps> = ({ onUpdate, onClose }) => {
             due : date,
             description : description.length ? description : null,
         }
-        console.log(event)
         await createReminder(accessToken, event).then((response : any) => {
             onUpdate()
             onClose()
