@@ -26,11 +26,10 @@ export default function Home() {
 
 
   return (
-    <div>
       <Container fluid >
         <Grid align="center" justify="space-between" style={{ margin: 20}}>
           <Grid.Col span={3}>
-            <Title order={1} style={{marginLeft : 30}}>Priorify</Title>
+            <Title order={1} style={{marginLeft : 30, color : '#F39C12'}}>Priorify</Title>
           </Grid.Col>
           <Grid.Col span={6}>
             <TextInput
@@ -65,6 +64,5 @@ export default function Home() {
           </Grid.Col>
         </Grid>
       </Container>
-    </div>
   );
 }

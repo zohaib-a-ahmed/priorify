@@ -2,6 +2,8 @@
 import { useEffect } from 'react';
 import { supabase } from '../app/supabase/client';
 import { useRouter } from 'next/navigation';
+import { Center, Title, Button, Text, Container, Paper } from '@mantine/core';
+
 
 export default function Index() {
 
@@ -27,19 +29,28 @@ export default function Index() {
   }, [])
 
   return (
-    <>
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="p-10 bg-white rounded shadow-lg">
-        <div className="flex flex-col gap-4">
-          <button
-            onClick={handleSignInWithGoogle}
-            className="px-6 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-          >
-            Sign in with Google
-          </button>
-        </div>
-      </div>
+    <div style={{ backgroundColor: '#333333', minHeight: '100vh' }}>
+        <Container>
+          <Center style={{ height: '100vh' }}>
+            <Paper shadow="lg" radius="md" withBorder p="xl">
+              <Center>
+                <Title fw={800} order={1} style={{ marginBottom : 10, color : '#F39C12'}}>Priorify</Title>             
+              </Center>
+              <Text fw={550}> LLM-assisted Productivity Hub</Text> 
+              <Button
+                fullWidth
+                variant="gradient"
+                gradient={{ from: 'red', to: 'orange', deg: 50 }}
+                radius="md"
+                mt='lg'
+                size='lg'
+                onClick={handleSignInWithGoogle}
+              >
+                Sign In With Google
+              </Button>
+            </Paper>         
+          </Center>
+      </Container>      
     </div>
-    </>
   );
 }

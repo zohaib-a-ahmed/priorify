@@ -15,7 +15,7 @@ type TodoProps = {
 const ToDo: React.FC<TodoProps> = ({ onUpdate }, key) => {
 
     const [opened, { open, close }] = useDisclosure(false);
-    const [reminders, setReminders] = useState<Reminder[]>([])
+    const [reminders, setReminders] = useState<Reminder[]>()
     const [accessToken, setAccessToken] = useState("")
     const [visible, setVisibility] = useState(true);
     const router = useRouter();
@@ -36,7 +36,7 @@ const ToDo: React.FC<TodoProps> = ({ onUpdate }, key) => {
     }, [key]);
 
     useEffect(() => {
-        if (reminders && reminders.length > 0) setVisibility(false)
+        if (reminders) setVisibility(false)
     }, [reminders])
 
     async function deleteAssignment(id : number) {
