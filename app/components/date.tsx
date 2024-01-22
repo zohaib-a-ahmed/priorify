@@ -47,7 +47,6 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
         toggle()
         if (accessToken && accessToken.length > 0 && identifiers.length > 0) {
             try {
-                console.log('trying to toggle 1')
                 // Convert each ID to a string and map to an array of fetch promises
                 const deletionPromises = identifiers.map(id =>
                     deleteEvent(id, accessToken)
@@ -56,9 +55,7 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
                 const responses = await Promise.all(deletionPromises);
     
                 responses.forEach(response => {
-                    if (response.status === 200) {
-                        console.log('Event deleted successfully');
-                    } else {
+                    if (response.status != 200) {
                         console.error('Failed to delete event with status:', response.status);
                     }
                 });
@@ -80,41 +77,51 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
         return a.event_time.localeCompare(b.event_time);
     }).map((event, index) => (
         <div key={index} className="mb-4">
-                <Paper shadow="xs" radius="lg" p="xl" withBorder>
-                        <div id="EventInformation">
-                            <div className="flex justify-between">
-                                <Text size="sm" fw={700} className="truncate">{event.title}</Text>
-                                {event.event_time && <Text size="sm" className="text-gray-600">{event.event_time}</Text>}
-                            </div>
-                            {event.description && <Text size="sm" className="text-gray-500 mt-1">{event.description}</Text>}                     
-                        </div>
-                        {isEdit && 
-                        <div className="flex justify-end">
-                            <Checkbox
-                            labelPosition="left"
-                            label="Remove"
-                            color="red"
-                            radius="md"
-                            size="sm"
-                            onChange={(checkEvent) => changeDeletions(+event.id, checkEvent.currentTarget.checked)}
-                            />                 
-                        </div>
-                        }
-                </Paper>
+            <Paper shadow="xs" radius="lg" p="xl" withBorder>
+                <div id="EventInformation">
+                    <div className="flex justify-between items-center mb-2">
+                        <Text size="md" fw={500} className="truncate">{event.title}</Text>
+                        {event.event_time && (
+                            <Text size="sm" className="text-gray-600">
+                                {new Date(`1970-01-01T${event.event_time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                            </Text>
+                        )}
+                    </div>
+                    {event.description && <Text size="sm" className="text-gray-500">{event.description}</Text>}
+                </div>
+                {isEdit && 
+                <div className="flex justify-end mt-3">
+                    <Checkbox
+                        labelPosition="left"
+                        label="Remove"
+                        color="red"
+                        radius="md"
+                        size="sm"
+                        onChange={(checkEvent) => changeDeletions(+event.id, checkEvent.currentTarget.checked)}
+                    />                 
+                </div>
+                }
+            </Paper>
         </div>
     ));
+    
 
     const reminderDetails = reminders.map((reminder, index) => (
         <div key={index} className="mb-4">
             <Paper shadow="xs" radius="lg" p="xl" withBorder>
-                <div className="flex justify-between">
-                    <Text size="sm" fw={700} className="truncate">{reminder.title}</Text>
-                    {reminder.due && <Text size="sm" className="text-gray-600">{new Date(reminder.due).toLocaleDateString()}</Text>}
+                <div className="flex justify-between items-center mb-2">
+                    <Text size="md" fw={500} className="truncate">{reminder.title}</Text>
+                    {reminder.due && (
+                        <Text size="sm" className="text-gray-600">
+                            {new Date(reminder.due).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                        </Text>
+                    )}
                 </div>
-                {reminder.description && <Text size="sm" className="text-gray-500 mt-1">{reminder.description}</Text>}
+                {reminder.description && <Text size="sm" className="text-gray-500">{reminder.description}</Text>}
             </Paper>
         </div>
     ));
+    
 
     return (
         <Card 
@@ -130,24 +137,35 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
                 </Center>
             </Card.Section>
             {isInactive ? null : (
-                <Card.Section className="cursor-pointer">
-                    <Center style={{marginTop : 15}}>
-                        {(events.length > 0 || reminders.length > 0) ? (
-                            <Button onClick = {open} variant="transparent" color="orange" size="md" fullWidth>{events.length} event{events.length > 1 ? 's' : ''}</Button>
-                        ) : (
-                            <Text size="sm" className="text-gray-500"></Text>
-                        )}
-                    </Center>
+                <Card.Section className="cursor-pointer p-2">
+                    {events.length > 0 && (
+                        <Button onClick={open} variant="transparent" color="orange" size="sm" fullWidth className="mb-1">
+                            {events.length} event{events.length === 1 ? '' : 's'}
+                        </Button>
+                    )}
+                    {reminders.length > 0 && (
+                        <Button onClick={open} variant="transparent" color="orange" size="sm" fullWidth>
+                            {reminders.length} assignment{reminders.length === 1 ? '' : 's'}
+                        </Button>
+                    )}
+                    {events.length === 0 && reminders.length === 0 && (
+                        <Text size="sm" className="text-gray-500"></Text>
+                    )}
                 </Card.Section>
             )}
             <Modal opened={opened} onClose={close} title={currDay} centered radius="lg">
                 <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} loaderProps={{color : 'orange', type : 'bars'}}/>
                 <div className="flex flex-col h-full justify-between">
                     <div>
-                        {eventDetails.length > 0 ? eventDetails : <Text size="sm" className="text-gray-500">No events</Text>}
+                        {eventDetails.length > 0 ? (
+                            <>
+                                <Text size="md" className="text-gray-700" fw={550} style={{marginBottom : 10}}>Events </Text>
+                                {eventDetails}
+                            </>
+                        ) : <Text size="sm" className="text-gray-500"></Text>}
                         {reminderDetails.length > 0 ? (
                             <>
-                                <Text size="md" className="text-gray-700 my-2">Reminders</Text>
+                                <Text size="md" className="text-gray-700" fw={550} style={{marginBottom : 10}}>Assignments </Text>
                                 {reminderDetails}
                             </>
                         ) : null}

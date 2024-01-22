@@ -1,5 +1,5 @@
-import { SimpleGrid, Text, Center, Button, Group, Modal, Divider } from '@mantine/core';
-import { useDisclosure } from "@mantine/hooks";
+import { SimpleGrid, Text, Center, Button, Group, Modal, LoadingOverlay } from '@mantine/core';
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase/client';
 import { Event, Reminder } from '../supabase/types';
@@ -31,13 +31,13 @@ const CalendarComponent: React.FC<CalendarProps> = ( key ) => {
           const token = response.data.session?.access_token;
           if (token) {
             fetchEvents(token).then((response : any) => {
-              if (response == 401)
+              if (response == 401 || response == 500)
                 // Unauthorized, redirect
                 router.push('/')
               else setEvents(response)
             })
             fetchReminders(token).then((response : any) => {
-              if (response == 401)
+              if (response == 401 || response == 500)
                 // Unauthorized, redirect
                 router.push('/')
               else setReminders(response)
@@ -90,7 +90,7 @@ const CalendarComponent: React.FC<CalendarProps> = ( key ) => {
     
     const handleUpdate = () => {
       fetchEvents(accessToken).then((response : any) => {
-        if (response == 401)
+        if (response == 401 || response == 500)
           // Unauthorized, redirect
           router.push('/')
         else setEvents(response)
@@ -143,16 +143,18 @@ const CalendarComponent: React.FC<CalendarProps> = ( key ) => {
                 </Group>
                 <Button size='md' variant="subtle" color="orange" onClick={open} leftSection={<Text>{'+'}</Text>}>{"Event"}</Button>
             </Center>
-            <SimpleGrid cols={7} verticalSpacing='xl' style={{ marginBottom: 10 }}>
-                {days.map((day, index) => (
-                    <Center key={index}>
-                        <Text fw={700}>{day}</Text>
-                    </Center>
-                ))}
-            </SimpleGrid>
-            <SimpleGrid cols={7} verticalSpacing="xl">
-                {(events && events.length > 0) ? renderCalendar() : null}
-            </SimpleGrid>
+            <div id='calendar'>
+              <SimpleGrid cols={7} verticalSpacing='xl' style={{ marginBottom: 10 }}>
+                  {days.map((day, index) => (
+                      <Center key={index}>
+                          <Text fw={700}>{day}</Text>
+                      </Center>
+                  ))}
+              </SimpleGrid>
+              <SimpleGrid cols={7} verticalSpacing="xl">
+                  {(events && events.length > 0) ? renderCalendar() : null}
+              </SimpleGrid>              
+            </div>
             <Modal opened={opened} onClose={close} title="Create Event" radius='lg'>
                 <NewEvent onUpdate={handleUpdate} onClose={close}></NewEvent>
             </Modal>          

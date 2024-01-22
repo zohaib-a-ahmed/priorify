@@ -40,7 +40,6 @@ const NewEvent: React.FC<NewEventProps> = ({ onUpdate, onClose }) => {
             description : description.length ? description : null,
             event_time : eventTime ? `${eventTime}:00` : null
         }
-        console.log(event)
         await createEvent(accessToken, event).then((response : any) => {
             onUpdate()
             onClose()
