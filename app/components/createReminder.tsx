@@ -27,18 +27,24 @@ const NewReminder: React.FC<NewReminderProps> = ({ onUpdate, onClose }) => {
         });
       }, []);
     
-    async function createNewAssignment(){
-        toggle()
-        const event = {
-            title : title,
-            due : date,
-            description : description.length ? description : null,
+      const createNewAssignment = async () => {
+        toggle();
+        if (date) {
+            // Convert the selected date to the local time zone format
+            const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+            const event = {
+                title: title,
+                due: localDate,
+                description: description.length ? description : null,
+            };
+            console.log(event.due);
+            await createReminder(accessToken, event).then((response: any) => {
+                onUpdate();
+                onClose();
+            });
         }
-        await createReminder(accessToken, event).then((response : any) => {
-            onUpdate()
-            onClose()
-        })
-    }
+    };
+    
 
  
     return (
