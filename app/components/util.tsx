@@ -136,3 +136,33 @@ export async function deleteReminder(reminderId: number, token: string) {
     throw error; 
   }
 }
+
+export async function fetchLLMResponse(token: string, command: string) {
+  console.log('trying this shit')
+  try {
+    const response = await fetch('http://127.0.0.1:5000/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ input: command })
+    });
+
+    if (response.status === 401) {
+      console.log('Unauthorized');
+      return response
+
+    } else if (response.ok) { 
+      const data = await response.json();
+      console.log('fetch function got data:')
+      console.log(data)
+      return data;
+    } else {
+      console.log('Failed to process command');
+      // Handle other errors
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
