@@ -1,4 +1,5 @@
-import { TextInput } from "@mantine/core"
+import { TextInput, Modal } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { fetchLLMResponse } from "./util";
@@ -9,6 +10,7 @@ const LLMInput = () => {
     const [inputValue, setInputValue] = useState('');
     const [accessToken, setAccessToken] = useState('');
     const [details, setDetails] = useState(null)
+    const [opened, { open, close }] = useDisclosure(false);
     const router = useRouter()
   
     useEffect(() => {
@@ -20,18 +22,34 @@ const LLMInput = () => {
         });
       });
 
+    function getCurrDay(){
+        // Get the current date
+        const currentDate = new Date();
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayOfWeek = weekdays[currentDate.getDay()];
+        const formattedDate = currentDate.toISOString();
+
+        return `Today is ${dayOfWeek}, ${formattedDate}`;
+    }
 
     async function parseCommandWithLLM(command: string) {
         if (accessToken && accessToken.length > 0) {
-            fetchLLMResponse(accessToken, command).then((response : any) => {
-                console.log(response)
+            fetchLLMResponse(accessToken, command, getCurrDay()).then((response : any) => {
                 if (response == 401 || response == 500)
                 // Unauthorized, redirect
                 router.push('/')
-                else setDetails(response)
+                else {
+                    setDetails(response)
+                    open()
+                }
             })
         }
     };
+
+    function handleClose(){
+        setDetails(null)
+        close()
+    }
 
     return (
         <>
@@ -51,6 +69,9 @@ const LLMInput = () => {
               }
             }}
           />
+        <Modal opened={opened} onClose={() => handleClose()} title="Confirmation" radius='lg'>
+            ooga booga
+        </Modal> 
         </>
     )
 }

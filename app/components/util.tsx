@@ -137,8 +137,7 @@ export async function deleteReminder(reminderId: number, token: string) {
   }
 }
 
-export async function fetchLLMResponse(token: string, command: string) {
-  console.log('trying this shit')
+export async function fetchLLMResponse(token: string, command: string, currDate: string) {
   try {
     const response = await fetch('http://127.0.0.1:5000/ai', {
       method: 'POST',
@@ -146,7 +145,7 @@ export async function fetchLLMResponse(token: string, command: string) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ input: command })
+      body: JSON.stringify({ input: command, date: currDate })
     });
 
     if (response.status === 401) {
@@ -155,8 +154,6 @@ export async function fetchLLMResponse(token: string, command: string) {
 
     } else if (response.ok) { 
       const data = await response.json();
-      console.log('fetch function got data:')
-      console.log(data)
       return data;
     } else {
       console.log('Failed to process command');
