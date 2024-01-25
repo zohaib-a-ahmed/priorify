@@ -39,7 +39,7 @@ export default function Home() {
             <Title order={1} style={{marginLeft : 30, color : '#F39C12'}}>Priorify</Title>
           </Grid.Col>
           <Grid.Col span={6}>
-            <LLMInput></LLMInput>
+            <LLMInput onUpdate={refresh}></LLMInput>
           </Grid.Col>
           <Grid.Col span={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button

@@ -16,7 +16,7 @@ const NewEvent: React.FC<NewEventProps> = ({ onUpdate, onClose }) => {
     const [isRange, setIsRange] = useState(false);
     const [date, setDate] = useState<Date | null>(null);
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
-    const [eventTime, setEventTime] = useState("");
+    const [eventTime, setEventTime] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [visible, { toggle }] = useDisclosure(false);

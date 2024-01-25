@@ -4,15 +4,25 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { fetchLLMResponse } from "./util";
 import { useRouter } from "next/navigation";
+import LLMConfirmation from "./llm_confirm";
 
-const LLMInput = () => {
+type LLMInput = {
+    onUpdate : () => void;
+}
+
+const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
 
     const [inputValue, setInputValue] = useState('');
     const [accessToken, setAccessToken] = useState('');
-    const [details, setDetails] = useState(null)
     const [opened, { open, close }] = useDisclosure(false);
     const router = useRouter()
-  
+
+    const [type, setType] = useState('NONE');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [dateTime, setDateTime] = useState('');
+    const [endDate, setEndDate] = useState('');
+
     useEffect(() => {
         supabase.auth.getSession().then((response: any) => {
           const token = response.data.session?.access_token;
@@ -39,7 +49,11 @@ const LLMInput = () => {
                 // Unauthorized, redirect
                 router.push('/')
                 else {
-                    setDetails(response)
+                    setType(response.details.Type)
+                    setTitle(response.details.Title)
+                    setDescription(response.details.Description)
+                    setDateTime(response.details.Date)
+                    setEndDate(response.details.End)
                     open()
                 }
             })
@@ -47,8 +61,13 @@ const LLMInput = () => {
     };
 
     function handleClose(){
-        setDetails(null)
-        close()
+        setType('');
+        setTitle('');
+        setDescription('');
+        setDateTime('');
+        setEndDate('');
+        onUpdate();
+        close();
     }
 
     return (
@@ -70,7 +89,13 @@ const LLMInput = () => {
             }}
           />
         <Modal opened={opened} onClose={() => handleClose()} title="Confirmation" radius='lg'>
-            ooga booga
+            <LLMConfirmation
+                type={type}
+                title={title}
+                description={description}
+                dateTime={dateTime}
+                endDate={endDate}
+            />
         </Modal> 
         </>
     )
