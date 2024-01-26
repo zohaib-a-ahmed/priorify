@@ -49,6 +49,7 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
                 // Unauthorized, redirect
                 router.push('/')
                 else {
+                    console.log(response.details)
                     setType(response.details.Type)
                     setTitle(response.details.Title)
                     setDescription(response.details.Description)
@@ -66,7 +67,6 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
         setDescription('');
         setDateTime('');
         setEndDate('');
-        onUpdate();
         close();
     }
 
@@ -90,6 +90,8 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
           />
         <Modal opened={opened} onClose={() => handleClose()} title="Confirmation" radius='lg'>
             <LLMConfirmation
+                onClose={handleClose}
+                onUpdate={onUpdate}
                 type={type}
                 title={title}
                 description={description}

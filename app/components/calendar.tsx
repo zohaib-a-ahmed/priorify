@@ -156,7 +156,14 @@ const CalendarComponent: React.FC<CalendarProps> = ( key ) => {
               </SimpleGrid>              
             </div>
             <Modal opened={opened} onClose={close} title="Create Event" radius='lg'>
-                <NewEvent onUpdate={handleUpdate} onClose={close}></NewEvent>
+                <NewEvent 
+                  onUpdate={handleUpdate} 
+                  onClose={close}
+                  title=''
+                  description=''
+                  startDate={null}
+                  endDate={null}
+                  eventTime=''/>
             </Modal>          
         </>
     );

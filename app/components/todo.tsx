@@ -98,7 +98,12 @@ const ToDo: React.FC<TodoProps> = ({ onUpdate }, key) => {
                 </Accordion>
             </div>
             <Modal opened={opened} onClose={close} title="Create Assignment" radius='lg'>
-                <NewReminder onClose={close} onUpdate={onUpdate}></NewReminder>
+                <NewReminder 
+                    onClose={close} 
+                    onUpdate={onUpdate}
+                    title=""
+                    description=""
+                    dueDate={null}/>
             </Modal>                        
         </div>
     );
