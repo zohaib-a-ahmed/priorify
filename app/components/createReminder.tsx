@@ -6,46 +6,74 @@ import { supabase } from '../supabase/client';
 import { createReminder } from './util';
 
 interface NewReminderProps {
-    onUpdate : () => void;
-    onClose : () => void;
+    onUpdate: () => void;
+    onClose: () => void;
+    title: string;
+    description: string;
+    dueDate: Date | null;
 }
 
-const NewReminder: React.FC<NewReminderProps> = ({ onUpdate, onClose }) => {
+const NewReminder: React.FC<NewReminderProps> = ({
+        onUpdate,
+        onClose,
+        title: initialTitle,
+        description: initialDescription,
+        dueDate: initialDueDate,
+    }) => {
 
-    const [accessToken, setAccessToken] = useState("")
-    const [date, setDate] = useState<Date>();
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [visible, { toggle }] = useDisclosure(false);
+        const [accessToken, setAccessToken] = useState("");
 
-    useEffect(() => {
+        const [date, setDate] = useState<Date | null>(initialDueDate);
+        const [title, setTitle] = useState(initialTitle);
+        const [description, setDescription] = useState(initialDescription);
+        const [visible, { toggle }] = useDisclosure(false);
+
+        useEffect(() => {
         supabase.auth.getSession().then((response: any) => {
-          const token = response.data.session?.access_token;
-          if (token) {
+            const token = response.data.session?.access_token;
+            if (token) {
             setAccessToken(token);
-          }
+            }
         });
-      }, []);
-    
-    async function createNewAssignment(){
-        toggle()
-        const event = {
-            title : title,
-            due : date,
-            description : description.length ? description : null,
-        }
-        await createReminder(accessToken, event).then((response : any) => {
-            onUpdate()
-            onClose()
-        })
-    }
 
- 
+        // Adjust the initialDueDate to UTC
+        if (initialDueDate) {
+            const adjustedDueDate = new Date(
+            initialDueDate.getUTCFullYear(),
+            initialDueDate.getUTCMonth(),
+            initialDueDate.getUTCDate(),
+            initialDueDate.getUTCHours(),
+            initialDueDate.getUTCMinutes(),
+            initialDueDate.getUTCSeconds()
+            );
+            setDate(adjustedDueDate);
+        }
+        }, []);
+
+        
+      const createNewAssignment = async () => {
+        toggle();
+        if (date) {
+            // Convert the selected date to the local time zone format
+            const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+            const event = {
+                title: title,
+                due: localDate,
+                description: description.length ? description : null,
+            };
+            await createReminder(accessToken, event).then((response: any) => {
+                onUpdate();
+                onClose();
+            });
+        }
+    };
+    
+
     return (
         <form action="Create New Reminder">
             <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} loaderProps={{color : 'orange', type : 'bars'}}/>
             <Input.Wrapper label="Assignment" withAsterisk description="" error="" style={{marginBottom : 10}}>
-                <Input variant='filled' placeholder="Assignment Name" radius='md'value={title} onChange={(event) => setTitle(event.currentTarget.value)}/>
+                <Input variant='filled' placeholder="Assignment Name" radius='md' value={title} onChange={(event) => setTitle(event.currentTarget.value)}/>
             </Input.Wrapper>
             <Input.Wrapper description="" error="" style={{marginBottom : 10}}>
                 <DateTimePicker 

@@ -36,7 +36,7 @@ export default function Index() {
               <Center>
                 <Title fw={800} order={1} style={{ marginBottom : 10, color : '#F39C12'}}>Priorify</Title>             
               </Center>
-              <Text fw={550}> LLM-assisted Productivity Hub</Text> 
+              <Text fw={550}> LLM-Assisted Productivity Hub</Text> 
               <Button
                 fullWidth
                 variant="gradient"

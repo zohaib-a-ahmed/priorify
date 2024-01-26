@@ -6,21 +6,33 @@ import { supabase } from '../supabase/client';
 import { createEvent } from './util';
 
 interface NewEventProps {
-    onUpdate: () => void,
-    onClose: () => void
+    onUpdate: () => void;
+    onClose: () => void;
+    title: string;
+    description: string;
+    startDate: Date | null;
+    endDate: Date | null;
+    eventTime: string;
 }
 
-const NewEvent: React.FC<NewEventProps> = ({ onUpdate, onClose }) => {
+const NewEvent: React.FC<NewEventProps> = ({
+        onUpdate,
+        onClose,
+        title: initialTitle,
+        description: initialDescription,
+        startDate: initialStartDate,
+        endDate: initialEndDate,
+        eventTime: initialEventTime,
+    }) => {
+        const [accessToken, setAccessToken] = useState("");
+        const [visible, { toggle }] = useDisclosure(false);
+        const [isRange, setIsRange] = useState(false);
 
-    const [accessToken, setAccessToken] = useState("")
-    const [isRange, setIsRange] = useState(false);
-    const [date, setDate] = useState<Date | null>(null);
-    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
-    const [eventTime, setEventTime] = useState("");
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [visible, { toggle }] = useDisclosure(false);
-
+        const [date, setDate] = useState<Date | null>(initialStartDate);
+        const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([initialStartDate, initialEndDate]);
+        const [eventTime, setEventTime] = useState(initialEventTime);
+        const [title, setTitle] = useState(initialTitle);
+        const [description, setDescription] = useState(initialDescription);
 
     useEffect(() => {
         supabase.auth.getSession().then((response: any) => {

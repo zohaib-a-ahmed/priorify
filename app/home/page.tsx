@@ -2,14 +2,21 @@
 import { supabase } from '../supabase/client';
 import CalendarComponent from '../components/calendar';
 import ToDo from '../components/todo'
+import LLMInput from '../components/llm_input';
 import { useRouter } from 'next/navigation';
 import { Button, Container, Grid, TextInput, Title, Center, Divider } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
 
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    supabase.auth.getUser().then((response) => {
+      if (response.data.user?.aud != 'authenticated') router.push('/')
+    })
+  }, [])
 
   // Function to handle sign-out
   const signOut = async () => {
@@ -23,7 +30,7 @@ export default function Home() {
   const refresh = () => {
     setRefreshKey(prevKey => prevKey + 1);
   };
-
+  
 
   return (
       <Container fluid >
@@ -32,14 +39,7 @@ export default function Home() {
             <Title order={1} style={{marginLeft : 30, color : '#F39C12'}}>Priorify</Title>
           </Grid.Col>
           <Grid.Col span={6}>
-            <TextInput
-              variant='filled'
-              placeholder="What would you like me to assist?"
-              description='Google Gemini Assistant'
-              size="md"
-              radius="md"
-              style={{ width: '100%'}}
-            />
+            <LLMInput onUpdate={refresh}></LLMInput>
           </Grid.Col>
           <Grid.Col span={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
