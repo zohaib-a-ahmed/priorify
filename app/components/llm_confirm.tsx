@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Tabs, Center } from '@mantine/core';
+import { Tabs, Divider } from '@mantine/core';
 import NewEvent from './createEvent';
 import NewReminder from './createReminder'
-import { start } from 'repl';
 
 interface LLMConfirmationProps {
     onUpdate: () => void;
@@ -65,6 +64,7 @@ const LLMConfirmation: React.FC<LLMConfirmationProps> = ({
                 <Tabs.Tab value="Event" fw={650}>+ Event</Tabs.Tab>
                 <Tabs.Tab value="Assignment"fw={650}>+ Assignment</Tabs.Tab>
             </Tabs.List>
+            <Divider style={{marginBottom : 20}}></Divider>
             <Tabs.Panel value="Event">
                     {information && 
                     <NewEvent

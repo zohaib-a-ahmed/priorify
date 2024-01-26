@@ -1,5 +1,5 @@
-import { TextInput, Modal } from "@mantine/core"
-import { useDisclosure } from "@mantine/hooks";
+import { TextInput, Modal, LoadingOverlay } from "@mantine/core"
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { fetchLLMResponse } from "./util";
@@ -15,6 +15,7 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
     const [inputValue, setInputValue] = useState('');
     const [accessToken, setAccessToken] = useState('');
     const [opened, { open, close }] = useDisclosure(false);
+    const [visible, toggle] = useToggle([false, true]);
     const router = useRouter()
 
     const [type, setType] = useState('NONE');
@@ -44,6 +45,7 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
 
     async function parseCommandWithLLM(command: string) {
         if (accessToken && accessToken.length > 0) {
+          toggle()
             fetchLLMResponse(accessToken, command, getCurrDay()).then((response : any) => {
                 if (response == 401 || response == 500)
                 // Unauthorized, redirect
@@ -57,6 +59,7 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
                     setEndDate(response.details.End)
                     open()
                 }
+                toggle()
             })
         }
     };
@@ -72,6 +75,12 @@ const LLMInput: React.FC<LLMInput> = ({ onUpdate }) => {
 
     return (
         <>
+          <LoadingOverlay
+            visible={visible}
+            zIndex={1000}
+            overlayProps={{ radius: 'sm', blur: 2 }}
+            loaderProps={{ color: 'orange', type: 'bars' }}
+          />
         <TextInput
             variant='filled'
             placeholder="How would you like me to assist you today?"
