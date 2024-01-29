@@ -133,7 +133,7 @@ const CalendarDate: React.FC<CalendarDateProps> = ({ date, month, events, remind
         >
             <Card.Section withBorder inheritPadding >
                 <Center>
-                    {isInactive ? null : <Text fw={600} size="lg" className="text-blue-600">{date}</Text>}
+                    {isInactive ? null : <Text fw={600} size="lg" className="black">{date}</Text>}
                 </Center>
             </Card.Section>
             {isInactive ? null : (
