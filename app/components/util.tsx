@@ -1,7 +1,7 @@
 
 export async function fetchEvents(token : string){
     try {
-        const response = await fetch('http://127.0.0.1:5000/calendar', {
+        const response = await fetch('https://priorify-api.onrender.com/calendar', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -22,7 +22,7 @@ export async function fetchEvents(token : string){
 
 export async function fetchReminders(token : string){
     try {
-      const response = await fetch('http://127.0.0.1:5000/todo', {
+      const response = await fetch('https://priorify-api.onrender.com/todo', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -44,7 +44,7 @@ export async function fetchReminders(token : string){
 export async function deleteEvent(eventId: number, token: string) {
 
   try {
-    const response = await fetch(`http://127.0.0.1:5000/calendar/${eventId}`, {
+    const response = await fetch(`https://priorify-api.onrender.com/calendar/${eventId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -66,7 +66,7 @@ export async function deleteEvent(eventId: number, token: string) {
 export async function createEvent(token: string, event : any) {
 
   try {
-    const response = await fetch('http://127.0.0.1:5000/calendar', {
+    const response = await fetch('https://priorify-api.onrender.com/calendar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export async function createEvent(token: string, event : any) {
 export async function createReminder(token: string, event : any) {
 
   try {
-    const response = await fetch('http://127.0.0.1:5000/todo', {
+    const response = await fetch('https://priorify-api.onrender.com/todo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ export async function createReminder(token: string, event : any) {
 export async function deleteReminder(reminderId: number, token: string) {
 
   try {
-    const response = await fetch(`http://127.0.0.1:5000/todo/${reminderId}`, {
+    const response = await fetch(`https://priorify-api.onrender.com/todo/${reminderId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -139,7 +139,7 @@ export async function deleteReminder(reminderId: number, token: string) {
 
 export async function fetchLLMResponse(token: string, command: string, currDate: string) {
   try {
-    const response = await fetch('http://127.0.0.1:5000/ai', {
+    const response = await fetch('https://priorify-api.onrender.com/ai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
