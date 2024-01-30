@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+    // Disable CSS minification
+  optimizeCss: false,
+}
 
 module.exports = nextConfig
