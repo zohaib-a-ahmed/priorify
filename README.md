@@ -14,6 +14,7 @@ Priorify is a productivity manager designed for myself and my peers that allows 
 - You can create an account with Google and sign in [here](https://priorify.onrender.com).
 - The application is deployed and hosted via [Render](https://render.com/).
   - Note: This is hosted freely, and consequently might take a few minutes to re-spin up deployment.
+- The backend logic exists [here](https://github.com/zohaib-a-ahmed/priorify-api)
 
 ## Usage
 
